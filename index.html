@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vue.js Login with PHP/MySQLi</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+	<h1 class="page-header text-center">Login</h1>
+	<div id="login">
+		<div class="col-md-4 col-md-offset-4">
+			
+			<div class="panel panel-primary">
+			  	<div class="panel-heading"><span class="glyphicon glyphicon-lock"></span> Sign in</div>
+			  	<div class="panel-body">
+			    	<label>Username:</label>
+			    	<input type="text" class="form-control" v-model="logDetails.username" v-on:keyup="keymonitor">
+			    	<label>Password:</label>
+			    	<input type="password" class="form-control" v-model="logDetails.password" v-on:keyup="keymonitor">
+			  	</div>
+			  	<div class="panel-footer">
+			  		<button class="btn btn-primary btn-block" @click="checkLogin();"><span class="glyphicon glyphicon-log-in"></span> Login</button>
+			  	</div>
+			</div>
+
+			<div class="alert alert-danger text-center" v-if="errorMessage">
+				<button type="button" class="close" @click="clearMessage();"><span aria-hidden="true">&times;</span></button>
+				<span class="glyphicon glyphicon-alert"></span> {{ errorMessage }}
+			</div>
+
+			<div class="alert alert-success text-center" v-if="successMessage">
+				<button type="button" class="close" @click="clearMessage();"><span aria-hidden="true">&times;</span></button>
+				<span class="glyphicon glyphicon-check"></span> {{ successMessage }}
+			</div>
+
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.25/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.9.0/vue-resource.min.js"></script>
+<script>
+var app = new Vue({
+	el: '#login',
+	data:{
+		successMessage: "",
+		errorMessage: "",
+		logDetails: {username: '', password: ''},
+	},
+
+	methods:{
+		keymonitor: function(event) {
+       		if(event.key == "Enter"){
+         		app.checkLogin();
+        	}
+       	},
+
+		checkLogin: function(){          
+                
+        this.$http.post('api/login.php', {    username: this.logDetails.username ,password: this.logDetails.password  },        
+                                         
+            {    emulateJSON:true    }).then(function(response){  
+                
+                data = JSON.parse(response.data); 
+
+                if(!data.error)
+                {
+                    window.location.href="todo.html"; 
+                }    
+            
+            });
+
+        },
+		/*toFormData: function(obj){
+			var form_data = new FormData();
+			for(var key in obj){
+				form_data.append(key, obj[key]);
+			}
+			return form_data;
+		},*/
+
+		clearMessage: function(){
+			app.errorMessage = '';
+			app.successMessage = '';
+		}
+
+	}
+});</script>
+
+</body>
+</html>
